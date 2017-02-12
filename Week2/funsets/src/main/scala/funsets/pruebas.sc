@@ -1,27 +1,23 @@
-package funsets
-
-
 /**
- * 2. Purely Functional Sets.
- */
+  * 2. Purely Functional Sets.
+  */
 object FunSets {
   /**
-   * We represent a set by its characteristic function, i.e.
-   * its `contains` predicate.
-   */
+    * We represent a set by its characteristic function, i.e.
+    * its `contains` predicate.
+    */
   type Set = Int => Boolean
 
 
   /**
-   * Indicates whether a set contains a given element.
-   */
+    * Indicates whether a set contains a given element.
+    */
   def contains(s: Set, elem: Int): Boolean = s(elem)
 
   /**
-   * Returns the set of the one given element.
-   */
+    * Returns the set of the one given element.
+    */
   def singletonSet(elem: Int): Set = { (valInSet:Int) => valInSet == elem }
-
 
   /**
     * Returns the union of the two given sets,
@@ -48,15 +44,15 @@ object FunSets {
     */
   def filter(s: Set, p: Int => Boolean): Set = {element: Int => contains(s,element) && contains(p,element)}
 
-
   /**
-   * The bounds for `forall` and `exists` are +/- 1000.
-   */
+    * The bounds for `forall` and `exists` are +/- 1000.
+    */
   val bound = 1000
 
+
   /**
-   * Returns whether all bounded integers within `s` satisfy `p`.
-   */
+    * Returns whether all bounded integers within `s` satisfy `p`.
+    */
   def forall(s: Set, p: Int => Boolean): Boolean = {
     def iter(a: Int): Boolean = {
       if (a < -bound ) true
@@ -67,35 +63,57 @@ object FunSets {
   }
 
   /**
-   * Returns whether there exists a bounded integer within `s`
-   * that satisfies `p`.
-   */
+    * Returns whether there exists a bounded integer within `s`
+    * that satisfies `p`.
+    */
   def exists(s: Set, p: Int => Boolean): Boolean = {
     def iter(a: Int): Boolean = {
-      if (a < -bound) true
+      if (a < -bound) false
       else if (contains(s, a) && contains(filter(s, p), a)) true
       else iter(a - 1)
     }
     iter(bound)
   }
 
-  /**
-   * Returns a set transformed by applying `f` to each element of `s`.
-   */
+
   def map(s: Set, f: Int => Int): Set = { element: Int => exists(s,{elem2:Int => f(elem2) == element})}
-  
+
   /**
-   * Displays the contents of a set
-   */
+    * Returns a set transformed by applying `f` to each element of `s`.
+    */
+  def map2(s: Set, f: Int => Int): Set = { elem:Int => exists(s, {elem2:Int => f(elem2) == elem}) }
+
+  /**
+    * Displays the contents of a set
+    */
   def toString(s: Set): String = {
     val xs = for (i <- -bound to bound if contains(s, i)) yield i
     xs.mkString("{", ",", "}")
   }
 
   /**
-   * Prints the contents of a set on the console.
-   */
+    * Prints the contents of a set on the console.
+    */
   def printSet(s: Set) {
     println(toString(s))
   }
 }
+
+
+FunSets.contains((x: Int) => x < 0, -100)
+val test1 = FunSets.singletonSet(1)
+val test2 = FunSets.singletonSet(-1000)
+val test3 = FunSets.singletonSet(-999)
+FunSets.contains(test1,0)
+val pruebaca = FunSets.union(test2,test3)
+/*FunSets.toString(pruebaca)
+FunSets.toString(FunSets.filter(pruebaca,(x:Int) => x < -998))
+println("BLAVLAVLAVAL")
+val result = FunSets.forall(pruebaca,(s: Int) => s < -998)
+val result2  =FunSets.exists(pruebaca,(x:Int) => x==123456)
+result2
+FunSets.exists(pruebaca,(x:Int) => x > -998)
+
+FunSets.exists1(pruebaca,(x:Int) => x > -998)
+*/
+FunSets.printSet(FunSets.map(pruebaca, (x:Int) => x/2))
