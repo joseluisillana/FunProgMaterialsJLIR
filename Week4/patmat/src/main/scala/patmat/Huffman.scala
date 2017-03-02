@@ -108,16 +108,21 @@ object Huffman {
     * If `trees` is a list of less than two elements, that list should be returned
     * unchanged.
     */
-  def combine(trees: List[CodeTree]): List[CodeTree] = {
-    trees match {
-      case x :: y :: Nil =>
+  def combine(trees: List[CodeTree]): List[CodeTree] =
+    /*trees match {
+      case left :: right :: cs =>
+        combine(makeCodeTree(left, right) :: cs)
+      case _ =>
         trees
-      case x :: Nil =>
-        trees
-      case head :: tail =>
-        combine(makeCodeTree(trees.head, trees.tail.head) :: trees.tail.tail)
+    }*/
+
+    trees match{
+      case left :: right :: cs =>
+        (makeCodeTree(left,right) :: cs).sortWith((t1, t2) => weight(t1) <
+        weight(t2))
+      case _ => trees
     }
-  }
+
 
   /*def combine(trees: List[CodeTree]): List[CodeTree] = trees match {
     case head :: tail =>
@@ -153,10 +158,12 @@ object Huffman {
     * - try to find sensible parameter names for `xxx`, `yyy` and `zzz`.
     */
   def until(sgl: List[CodeTree] => Boolean, cmb: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]):
-  CodeTree = {
+  List[CodeTree] = {
     sgl(trees) match {
-      case true => trees(0)
-      case false => until(sgl, cmb)(cmb(trees))
+      case true =>
+        trees
+      case false =>
+        until(sgl, cmb)(cmb(trees))
     }
   }
 
@@ -167,7 +174,7 @@ object Huffman {
     * frequencies from that text and creates a code tree based on them.
     */
   def createCodeTree(chars: List[Char]): CodeTree = {
-    until(singleton, combine)(makeOrderedLeafList(times(chars)))
+    until(singleton, combine)(makeOrderedLeafList(times(chars))).head
   }
 
 
